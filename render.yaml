@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: smart-expense-tracker
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.6
+      - key: EXPENSE_DB_PATH
+        value: /var/lib/expense-tracker/expenses.db
+    disk:
+      name: expense-tracker-data
+      mountPath: /var/lib/expense-tracker
+      sizeGB: 1

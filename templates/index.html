@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Expense Tracker</title>
+    <style>
+        :root {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fb;
+            color: #1f2937;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+        }
+
+        h1,
+        h2 {
+            margin: 0 0 12px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        input,
+        button {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5f5;
+            font-size: 0.95rem;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button.secondary {
+            background: #e2e8f0;
+            color: #1f2937;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .summary-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .error {
+            color: #dc2626;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Smart Expense Tracker</h1>
+        <p>A beginner-friendly dashboard to log, analyze, and discuss expenses in interviews.</p>
+
+        <div class="card">
+            <h2>{{ 'Edit Expense' if edit_expense else 'Add Expense' }}</h2>
+            <form method="post"
+                action="{{ url_for('update', expense_id=edit_expense.id) if edit_expense else url_for('add') }}">
+                <input type="text" name="title" placeholder="Expense title"
+                    value="{{ edit_expense.title if edit_expense else '' }}" required />
+                <input type="number" step="0.01" name="amount" placeholder="Amount"
+                    value="{{ edit_expense.amount if edit_expense else '' }}" required />
+                <input type="text" name="category" placeholder="Category (Food, Travel...)"
+                    value="{{ edit_expense.category if edit_expense else '' }}" required />
+                <input type="date" name="date" value="{{ edit_expense.date if edit_expense else '' }}" required />
+                <button type="submit">{{ 'Update' if edit_expense else 'Add Expense' }}</button>
+                {% if edit_expense %}
+                <a href="{{ url_for('index') }}">
+                    <button type="button" class="secondary">Cancel</button>
+                </a>
+                {% endif %}
+            </form>
+            {% if request.args.get('error') %}
+            <p class="error">{{ request.args.get('error') }}</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>All Expenses</h2>
+                <a href="{{ url_for('index', sort='amount') }}">
+                    <button type="button" class="secondary">Sort by Amount (High → Low)</button>
+                </a>
+            </div>
+            {% if expenses %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Amount</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenses %}
+                    <tr>
+                        <td>{{ expense.title }}</td>
+                        <td>₹{{ '%.2f' | format(expense.amount) }}</td>
+                        <td>{{ expense.category }}</td>
+                        <td>{{ expense.date }}</td>
+                        <td>
+                            <a href="{{ url_for('index', edit=expense.id) }}">Edit</a>
+                            <form method="post" action="{{ url_for('delete', expense_id=expense.id) }}"
+                                style="display: inline;">
+                                <button type="submit" class="secondary">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No expenses yet. Start by adding your first entry!</p>
+            {% endif %}
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h2>Category Summary</h2>
+                {% if summaries.category %}
+                <ul class="summary-list">
+                    {% for category, total in summaries.category.items() %}
+                    <li>
+                        <span>{{ category }}</span>
+                        <span>₹{{ '%.2f' | format(total) }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No category data to show.</p>
+                {% endif %}
+            </div>
+
+            <div class="card">
+                <h2>Monthly Summary</h2>
+
+                {% if summaries.monthly %}
+                <p>
+                    <strong>This Month Total:</strong>
+                    ₹{{ '%.2f' | format(summaries.monthly) }}
+                </p>
+                {% else %}
+                <p>No monthly data to show.</p>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>
