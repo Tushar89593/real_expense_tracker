@@ -16,8 +16,19 @@ def get_connection():
 
 
 def init_db():
-    """Create the expenses table if it doesn't exist."""
+    """Create the expenses and users tables if they don't exist."""
     with get_connection() as connection:
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT UNIQUE NOT NULL,
+                password_hash TEXT,
+                name TEXT NOT NULL,
+                google_id TEXT UNIQUE
+            )
+            """
+        )
         connection.execute(
             """
             CREATE TABLE IF NOT EXISTS expenses (
@@ -25,7 +36,9 @@ def init_db():
                 title TEXT NOT NULL,
                 amount REAL NOT NULL,
                 category TEXT NOT NULL,
-                date TEXT NOT NULL
+                date TEXT NOT NULL,
+                user_id INTEGER,
+                FOREIGN KEY (user_id) REFERENCES users(id)
             )
             """
         )
