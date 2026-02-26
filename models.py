@@ -1,5 +1,6 @@
 """CRUD operations for expenses and users."""
 
+import sqlite3
 from typing import Iterable, Optional
 
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -21,7 +22,7 @@ def create_user(email: str, password: str, name: str) -> Optional[int]:
             )
             connection.commit()
             return cursor.lastrowid
-    except Exception:
+    except sqlite3.IntegrityError:
         return None
 
 

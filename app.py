@@ -28,7 +28,7 @@ from models import (
 from utils import category_summary, monthly_summary, sort_by_amount_desc
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
+app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24).hex()
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -241,7 +241,8 @@ def google_callback():
         user_dict = get_user_by_id(user_id)
         login_user(User(user_dict))
         return redirect(url_for("index"))
-    except Exception:
+    except Exception as exc:
+        app.logger.warning("Google sign-in failed: %s", exc)
         return redirect(url_for("login", error="Google sign-in failed. Please try again."))
 
 
