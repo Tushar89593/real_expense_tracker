@@ -113,13 +113,61 @@
             font-size: 1rem;
             color: var(--text);
             line-height: 1;
-            transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
         }
 
         .theme-toggle:hover {
             background: var(--accent-light);
             border-color: var(--accent);
-            transform: rotate(15deg);
+            transform: scale(1.15);
+            color: var(--accent-hover);
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-login {
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            border: 1.5px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            transition: background 0.15s ease, color 0.15s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            line-height: 1;
+        }
+
+        .btn-login:hover {
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .user-name {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .login-prompt {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .login-prompt p {
+            font-size: 1rem;
+            margin-bottom: 16px;
         }
 
         /* ── Container ───────────────────────────────────────────────────── */
@@ -483,12 +531,21 @@
     <!-- ── Navbar ───────────────────────────────────────────────────────── -->
     <nav class="navbar">
         <div class="navbar-inner">
-            <span class="navbar-brand">💸 Smart Expense Tracker</span>
-            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle theme">🌙</button>
+            <span class="navbar-brand">Smart Expense Tracker</span>
+            <div class="navbar-actions">
+                {% if current_user.is_authenticated %}
+                <span class="user-name">{{ current_user.name }}</span>
+                <a href="{{ url_for('logout') }}" class="btn-login">Logout</a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="btn-login">Login</a>
+                {% endif %}
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle theme">🌙</button>
+            </div>
         </div>
     </nav>
 
     <div class="container">
+        {% if current_user.is_authenticated %}
         <!-- ── Add / Edit Form ───────────────────────────────────────────── -->
         <div class="card">
             <h2>{{ 'Edit Expense' if edit_expense else 'Add Expense' }}</h2>
@@ -531,10 +588,20 @@
                 </div>
             </form>
             {% if request.args.get('error') %}
-            <div class="alert-error">⚠️ {{ request.args.get('error') }}</div>
+            <div class="alert-error">{{ request.args.get('error') }}</div>
             {% endif %}
         </div>
+        {% else %}
+        <!-- ── Login Prompt ──────────────────────────────────────────────── -->
+        <div class="card">
+            <div class="login-prompt">
+                <p>Please log in to add and manage your expenses.</p>
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Get Started</a>
+            </div>
+        </div>
+        {% endif %}
 
+        {% if current_user.is_authenticated %}
         <!-- ── Expense Table ─────────────────────────────────────────────── -->
         <div class="card">
             <div class="card-header">
@@ -629,6 +696,7 @@
                 {% endif %}
             </div>
         </div>
+        {% endif %}
     </div>
 
     <script>

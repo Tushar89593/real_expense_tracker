@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Smart Expense Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --accent-light: #eef2ff;
+            --danger: #ef4444;
+            --nav-bg: #ffffff;
+            --nav-border: #e5e7eb;
+            --shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
+            --input-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --accent: #818cf8;
+            --accent-hover: #6366f1;
+            --accent-light: #1e1b4b;
+            --danger: #f87171;
+            --nav-bg: #1e293b;
+            --nav-border: #334155;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+            --input-bg: #0f172a;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        body { margin: 0; padding: 0; }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--nav-bg);
+            border-bottom: 1px solid var(--nav-border);
+            box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+
+        .navbar-inner {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar-brand {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 7px 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text);
+            line-height: 1;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-light);
+            border-color: var(--accent);
+            transform: scale(1.15);
+            color: var(--accent-hover);
+        }
+
+        .auth-container {
+            max-width: 420px;
+            margin: 60px auto;
+            padding: 0 24px;
+        }
+
+        .auth-card {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 36px 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .auth-card h2 {
+            margin: 0 0 8px;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .auth-card .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 18px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1.5px solid var(--border);
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: var(--input-bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            line-height: 1;
+            width: 100%;
+        }
+
+        .btn:active { transform: scale(0.97); }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 40%, transparent);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 50%, transparent);
+        }
+
+        .btn-google {
+            background: var(--card);
+            color: var(--text);
+            border: 1.5px solid var(--border);
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            border-radius: 8px;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+        .btn-google:hover {
+            background: var(--accent-light);
+            border-color: var(--accent);
+        }
+
+        .btn-google svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 22px 0;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .alert-error {
+            margin-bottom: 18px;
+            padding: 12px 16px;
+            background: color-mix(in srgb, var(--danger) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+            border-left: 4px solid var(--danger);
+            border-radius: 8px;
+            color: var(--danger);
+            font-size: 0.9rem;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        .auth-footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="{{ url_for('index') }}" class="navbar-brand">Smart Expense Tracker</a>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle theme">🌙</button>
+        </div>
+    </nav>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2>Welcome back</h2>
+            <p class="subtitle">Sign in to manage your expenses</p>
+
+            {% if error or request.args.get('error') %}
+            <div class="alert-error">{{ error or request.args.get('error') }}</div>
+            {% endif %}
+
+            <button class="btn-google" onclick="googleSignIn()" type="button">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Continue with Google
+            </button>
+
+            <div class="divider">or</div>
+
+            <form method="post" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Your password" required />
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+
+            <div class="auth-footer">
+                Don't have an account? <a href="{{ url_for('register') }}">Sign up</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var html = document.documentElement;
+            var btn = document.getElementById('themeToggle');
+
+            function applyTheme(theme) {
+                html.setAttribute('data-theme', theme);
+                btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+            }
+
+            var saved = localStorage.getItem('theme') || 'light';
+            applyTheme(saved);
+
+            btn.addEventListener('click', function () {
+                var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                localStorage.setItem('theme', next);
+                applyTheme(next);
+            });
+        })();
+
+        function googleSignIn() {
+            // Google Sign-In requires a valid GOOGLE_CLIENT_ID configured on the server.
+            // When configured, this will use Google Identity Services.
+            alert('Google Sign-In requires configuration. Please set the GOOGLE_CLIENT_ID environment variable.');
+        }
+    </script>
+</body>
+
+</html>
